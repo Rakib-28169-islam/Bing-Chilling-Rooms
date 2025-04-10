@@ -1,0 +1,24 @@
+hotel_management/
+│
+├── main.py                  # Streamlit app entry point
+├── database
+|   |__ mongodb.py              # MongoDB connection and helpers
+│
+├── auth/
+│   ├── auth_service.py      # Singleton Auth service
+│   └── user_factory.py      # Factory method
+│
+├── users/
+│   ├── User.py         # Base User class
+│   ├── Admin.py             # Admin class
+│   ├── Host.py              # Host class
+│   └── Guest.py             # Guest class
+|   |__ UserType.py 
+│
+├── proxy/
+│   └── user_proxy.py        # Role-based access control
+│
+├── pages/
+│   ├── SignUp.py            # Sign-up Page
+│   ├── SignIn.py            # Sign-in Page
+│   └── Home.py              # Home page after login
