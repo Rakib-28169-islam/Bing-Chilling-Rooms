@@ -2,7 +2,7 @@
 
 ## Step-by-step Git Commands:
 
-### If You Don't Create the project folder on Your Local Pc Then Follow from step 1,2
+# If You Don't Create the project folder on Your Local Pc Then Follow from step 1,2
 # 1. Initialize local repo (if not already)
 
 git init
@@ -15,11 +15,11 @@ git fetch origin
 
 # 4. Checkout  friend's branch (example: Rakib)
 git checkout -b Rakib origin/Rakib
-### this command will download all files from Rakib Branch
+# this command will download all files from Rakib Branch
 
 # 5. Create your own branch
 git checkout -b your_name
-### *** Must Create Your Repo Then push your code Unless it will mixed up with another Branches code
+# *** Must Create Your Repo Then push your code Unless it will mixed up with another Branches code
 
 # 6. Push your own branch to GitHub
 git push origin Hasib
