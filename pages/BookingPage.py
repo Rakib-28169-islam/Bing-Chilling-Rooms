@@ -60,7 +60,7 @@ def render():
             st.write(f"**Total price:** ${total_price}")
         
         # Submit button
-        submit_button = st.form_submit_button(label="Confirm Booking")
+        submit_button = st.form_submit_button(label="Make Payment")
         
         if submit_button:
             if check_in >= check_out:
@@ -79,9 +79,11 @@ def render():
                 
                 if booking_id:
                     st.success(f"Booking confirmed! Your booking ID is: {booking_id}")
-                    if st.button("View My Bookings"):
-                        st.session_state["booking_section"] = "my_bookings"
-                        st.switch_page("pages/BookingPage.py")
+                    # Store booking details in session state
+                    st.session_state["booking_id"] = booking_id
+                    st.session_state["total_price"] = total_price
+                    # Redirect to payment page
+                    st.switch_page("pages/payment_page.py")
                 else:
                     st.error(f"Booking failed: {message}")
     
