@@ -9,6 +9,7 @@ class User:
         self.__email = email
         self.__password = password
         self.__userType = user_type
+        self._id = None  # MongoDB _id
         
      
     def getName(self):
@@ -19,6 +20,8 @@ class User:
         return self.__password
     def getUserType(self):
         return self.__userType.value
+    def getId(self):
+        return self._id
     def showRooms(self):
         return "Showing rooms"
     def browse_listings(self):

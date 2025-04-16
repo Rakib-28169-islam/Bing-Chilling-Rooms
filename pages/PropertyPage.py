@@ -84,7 +84,9 @@ def browse_properties():
             user = st.session_state.get("user")
             if user and user.getUserType() == "guest":
                 if st.button(f"Book this property", key=f"book_{prop['property_id']}"):
-                    st.info(f"Booking functionality would go here for property {prop['property_id']}")
+                    # Store property_id in session state and switch to booking page
+                    st.session_state["booking_property_id"] = prop['property_id']
+                    st.switch_page("pages/BookingPage.py")
 
 def my_properties():
     """Show and manage host's own properties"""
@@ -172,3 +174,6 @@ def my_properties():
                     st.rerun()
                 else:
                     st.error(message)
+
+# Call the render function to display the page
+render()

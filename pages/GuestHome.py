@@ -5,6 +5,14 @@ def render():
     st.title("Guest Dashboard")
     
     user = st.session_state.get("user")
+    
+    # Check if user exists in session state
+    if not user:
+        st.warning("Please sign in to access the guest dashboard.")
+        if st.button("Go to Login"):
+            st.switch_page("pages/Login.py")
+        return
+    
     proxy = UserProxy(user)
     
     st.write(f"Welcome back, **{user.getName()}**!")
@@ -20,8 +28,11 @@ def render():
     with col1:
         if st.button("Browse Listings"):
             try:
-                result = proxy.execute("browse_listings")
+                result = proxy.execute("browse_listings")            
                 st.info(result)
+                # Set property_section to browse before switching pages
+                st.session_state["property_section"] = "browse"
+                st.switch_page("pages/PropertyPage.py")
             except Exception as e:
                 st.error(f"Error: {str(e)}")
                 
@@ -31,4 +42,7 @@ def render():
                 result = proxy.execute("book_accommodation")
                 st.info(result)
             except Exception as e:
-                st.error(f"Error: {str(e)}") 
+                st.error(f"Error: {str(e)}")
+
+# # Call the render function to display the page
+# render() 
