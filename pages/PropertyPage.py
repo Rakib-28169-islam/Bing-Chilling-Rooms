@@ -55,6 +55,9 @@ def browse_properties():
     
     # Display properties
     for prop in properties:
+        # Use _id as the property ID if it exists
+        property_id = str(prop.get('_id', '')) if '_id' in prop else prop.get('property_id', '')
+        
         with st.expander(f"{prop['title']} - {prop['location']} (${prop['price']}/night)"):
             col1, col2 = st.columns(2)
             
@@ -83,9 +86,9 @@ def browse_properties():
             # Add booking button for guests
             user = st.session_state.get("user")
             if user and user.getUserType() == "guest":
-                if st.button(f"Book this property", key=f"book_{prop['property_id']}"):
+                if st.button(f"Book this property", key=f"book_{property_id}"):
                     # Store property_id in session state and switch to booking page
-                    st.session_state["booking_property_id"] = prop['property_id']
+                    st.session_state["booking_property_id"] = property_id
                     st.switch_page("pages/BookingPage.py")
 
 def my_properties():
@@ -103,24 +106,31 @@ def my_properties():
         st.subheader(f"You have {len(host_properties)} property listings")
         
         for prop in host_properties:
+            # Use _id as the property ID if it exists, otherwise fall back to property_id
+            property_id = str(prop.get('_id', '')) if '_id' in prop else prop.get('property_id', '')
+            
             with st.expander(f"{prop['title']} - {prop['location']}"):
                 st.write(f"**Type:** {prop['type'].capitalize()}")
                 st.write(f"**Price:** ${prop['price']}/night")
+                st.write(f"**Property ID:** {property_id}")
                 
                 col1, col2 = st.columns(2)
                 with col1:
-                    if st.button("Edit", key=f"edit_{prop['property_id']}"):
+                    if st.button("Edit", key=f"edit_{property_id}"):
                         st.session_state["editing_property"] = prop
                         st.rerun()
                         
                 with col2:
-                    if st.button("Delete", key=f"delete_{prop['property_id']}"):
-                        success, message = property_service.delete_property(prop['property_id'])
-                        if success:
-                            st.success(message)
-                            st.rerun()
-                        else:
-                            st.error(message)
+                    if st.button("Delete", key=f"delete_{property_id}"):
+                        try:
+                            success, message = property_service.delete_property(property_id)
+                            if success:
+                                st.success(message)
+                                st.rerun()
+                            else:
+                                st.error(f"{message} (ID: {property_id})")
+                        except Exception as e:
+                            st.error(f"Error: {str(e)}")
     
     # Add property form
     st.subheader("Add New Property")
@@ -170,7 +180,7 @@ def my_properties():
                 )
                 
                 if property_id:
-                    st.success(message)
+                    st.success(f"{message} (ID: {property_id})")
                     st.rerun()
                 else:
                     st.error(message)
