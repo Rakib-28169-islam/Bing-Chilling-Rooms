@@ -14,4 +14,5 @@ client = MongoClient(mongodb_uri)
 db = client["project"]
 users_collection = db["user"]
 properties_collection = db["properties"]
+booking_collection = db["booking"]
 
