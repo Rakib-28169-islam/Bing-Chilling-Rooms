@@ -1,3 +1,4 @@
+# users/User.py 
 from users.user_type import UserType
 from database.mongodb import users_collection
 class User:
@@ -20,10 +21,10 @@ class User:
         return self.__userType.value
     def showRooms(self):
         return "Showing rooms"
+    def browse_listings(self):
+        """Default browse listings method"""
+        return f"{self.getName()} is browsing property listings."    
     
 
 # user = User("james","james@123","1234",UserType.ADMIN)
 # print(user.showRooms())    
-   
-     
-        

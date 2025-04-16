@@ -1,3 +1,4 @@
+# database/mongodb.py
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
@@ -12,6 +13,5 @@ mongodb_uri = os.getenv("MONGODB_URI")
 client = MongoClient(mongodb_uri)
 db = client["project"]
 users_collection = db["user"]
-
-
+properties_collection = db["properties"]
 
