@@ -3,12 +3,10 @@ from database.mongodb import db
 from property.property_factory import PropertyFactory
 from bson import ObjectId
 
-# Create properties collection reference
 properties_collection = db["properties"]
 
 class PropertyService:
     _instance = None
-    
     @classmethod
     def get_instance(cls):
         if cls._instance is None:
@@ -18,12 +16,10 @@ class PropertyService:
     def create_property(self, host_id, property_type, details):
         """Create a new property listing"""
 
-        details["host_id"] = host_id
-        
-        property_obj = PropertyFactory.create_property(property_type, details)
-        
+        details["host_id"] = host_id  
+        creator = PropertyFactory.get_creator(property_type)
+        property_obj = creator.create_property(details)
         property_data = property_obj.get_details()
-        
         result = properties_collection.insert_one(property_data)
         
         if result.inserted_id:
@@ -32,17 +28,18 @@ class PropertyService:
     
     def get_property(self, property_id):
         """Get property by ID"""
-        property_data = properties_collection.find_one({"property_id": property_id})
-        
-        if not property_data:
-            return None, "Property not found."
-        
-        property_obj = PropertyFactory.create_property(
-            property_data["type"], 
-            property_data
-        )
-        
-        return property_obj, "Property found."
+        try:
+            property_data = properties_collection.find_one({"_id": ObjectId(property_id)})
+            
+            if not property_data:
+                return None, "Property not found."
+            
+            creator = PropertyFactory.get_creator(property_data["type"])
+            property_obj = creator.create_property(property_data)
+            
+            return property_obj, "Property found."
+        except Exception as e:
+            return None, f"Error retrieving property: {str(e)}"
     
     def update_property(self, property_id, details):
         """Update property details"""
@@ -55,7 +52,7 @@ class PropertyService:
         property_obj.update_details(details)
         
         result = properties_collection.update_one(
-            {"property_id": property_id},
+            {"_id": ObjectId(property_id)},
             {"$set": property_obj.get_details()}
         )
         
@@ -65,11 +62,14 @@ class PropertyService:
     
     def delete_property(self, property_id):
         """Delete a property"""
-        result = properties_collection.delete_one({"property_id": property_id})
-        
-        if result.deleted_count > 0:
-            return True, "Property deleted successfully."
-        return False, "Property not found or could not be deleted."
+        try:
+            result = properties_collection.delete_one({"_id": ObjectId(property_id)})
+            
+            if result.deleted_count > 0:
+                return True, "Property deleted successfully."
+            return False, "Property not found or could not be deleted."
+        except Exception as e:
+            return False, f"Error deleting property: {str(e)}"
     
     def list_properties(self, filters=None):
         """List properties with optional filters"""
@@ -78,11 +78,15 @@ class PropertyService:
         
         properties_list = []
         for prop_data in properties_data:
-            property_obj = PropertyFactory.create_property(
-                prop_data["type"],
-                prop_data
-            )
-            properties_list.append(property_obj.get_details())
+            # Ensure _id is properly serialized to string
+            prop_data_copy = dict(prop_data)
+            prop_data_copy['_id'] = str(prop_data_copy['_id'])
+            
+            creator = PropertyFactory.get_creator(prop_data_copy["type"])
+            property_obj = creator.create_property(prop_data_copy)
+            
+            details = property_obj.get_details()
+            properties_list.append(details)
         
         return properties_list
     

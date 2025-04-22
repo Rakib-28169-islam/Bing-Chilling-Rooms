@@ -21,7 +21,7 @@ class Property(ABC):
         
     def get_details(self):
         return {
-            "property_id": self._property_id,
+            "_id": self._property_id,
             "host_id": self._host_id,
             "title": self._title,
             "location": self._location,
