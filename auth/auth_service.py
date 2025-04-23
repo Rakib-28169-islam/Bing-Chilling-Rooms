@@ -34,12 +34,9 @@ class AuthService:
         return False,"Invalid credentials!"
     
     def get_user(self,email,password):
-        user_doc = users_collection.find_one({"email":email , "password":password})
-        if user_doc:
-            user = UserFactory.create_user(user_doc["user_type"],user_doc["name"],user_doc["email"],user_doc["password"])
-            # Add MongoDB _id to the user object
-            user._id = str(user_doc["_id"])
-            return user, "User found!"
-        return None, "User not found!"
+        user = users_collection.find_one({"email":email , "password":password})
+        if user:
+            return UserFactory.create_user(user["user_type"],user["name"],user["email"],user["password"]),"User found!"
+        return None,"User not found!"
         
         
